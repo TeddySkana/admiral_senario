@@ -1,0 +1,21 @@
+:root {
+  --color-page-bg-top: #020912;
+  --color-page-bg-bottom: #01050b;
+  --color-panel-bg: rgba(7, 20, 34, 0.9);
+  --color-panel-bg-strong: rgba(5, 14, 24, 0.96);
+  --color-text-primary: #ecf5ff;
+  --color-text-secondary: #9bb0c4;
+  --color-accent: #00b6d7;
+  --color-accent-soft: #7dd7e8;
+  --color-success: #43d38d;
+  --color-warning: #f5b950;
+  --color-danger: #ff6776;
+  --color-border: rgba(58, 93, 121, 0.58);
+  --color-divider: rgba(83, 122, 152, 0.3);
+
+  --radius-panel: 18px;
+  --radius-control: 11px;
+  --shadow-panel: 0 14px 36px rgba(0, 0, 0, 0.32);
+
+  color-scheme: dark;
+}
