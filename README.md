@@ -20,9 +20,9 @@ npm run build
 
 This project is now prepared for GitHub Pages deployment:
 
-- Vite base path is auto-resolved in [`vite.config.js`](/Users/lazeb/Desktop/skana_admirals_one/vite.config.js)
+- Vite base path is auto-resolved in `vite.config.js`
 - Runtime sprite/audio paths use `import.meta.env.BASE_URL`, so project pages (subpath) work correctly
-- CI workflow is included at [deploy-pages.yml](/Users/lazeb/Desktop/skana_admirals_one/.github/workflows/deploy-pages.yml)
+- CI workflow is included at `.github/workflows/deploy-pages.yml`
 
 ### One-Time Setup (GitHub UI)
 
