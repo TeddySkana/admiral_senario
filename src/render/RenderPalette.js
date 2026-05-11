@@ -30,6 +30,12 @@ export function getEntityColor(entity) {
     return RENDER_PALETTE.cargo;
   }
 
+  if (entity.type === 'threat') {
+    if (entity.state === 'collision') {
+      return RENDER_PALETTE.enemy;
+    }
+  }
+
   if (entity.classification === 'enemy') {
     return RENDER_PALETTE.enemy;
   }

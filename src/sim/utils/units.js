@@ -1,15 +1,45 @@
 export const YARDS_PER_NAUTICAL_MILE = 2025.371828521434;
+export const METERS_PER_NAUTICAL_MILE = 1852;
+export const METERS_PER_YARD = 0.9144;
 
 export function yardsToNauticalMiles(yards) {
   return yards / YARDS_PER_NAUTICAL_MILE;
+}
+
+export function nauticalMilesToMeters(nauticalMiles) {
+  return nauticalMiles * METERS_PER_NAUTICAL_MILE;
+}
+
+export function metersToNauticalMiles(meters) {
+  return meters / METERS_PER_NAUTICAL_MILE;
+}
+
+export function yardsToMeters(yards) {
+  return yards * METERS_PER_YARD;
+}
+
+export function metersToYards(meters) {
+  return meters / METERS_PER_YARD;
 }
 
 export function knotsToNmPerSecond(knots) {
   return knots / 3600;
 }
 
+export function knotsToMetersPerSecond(knots) {
+  return nauticalMilesToMeters(knots) / 3600;
+}
+
+export function metersPerSecondToKnots(value) {
+  return (value * 3600) / METERS_PER_NAUTICAL_MILE;
+}
+
 export function minutesToSeconds(minutes) {
   return minutes * 60;
+}
+
+export function hoursToSeconds(hours) {
+  return hours * 3600;
 }
 
 export function formatClock(totalSeconds) {

@@ -1,13 +1,9 @@
-function withBase(path) {
-  const base = (import.meta.env.BASE_URL ?? '/').replace(/\/?$/, '/');
-  const normalizedPath = path.replace(/^\/+/, '');
-  return `${base}${normalizedPath}`;
-}
+import { withBasePath } from '../utils/assets.js';
 
 const FREESOUND_BASE = {
-  sfx: withBase('audio/sfx'),
-  ambient: withBase('audio/ambient'),
-  music: withBase('audio/music'),
+  sfx: withBasePath('audio/sfx'),
+  ambient: withBasePath('audio/ambient'),
+  music: withBasePath('audio/music'),
 };
 
 const manifest = {

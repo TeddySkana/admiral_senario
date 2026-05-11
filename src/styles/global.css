@@ -42,6 +42,110 @@ body::before {
   gap: 16px;
 }
 
+.scenario-selection-shell,
+.scenario-brief-shell {
+  padding: 28px;
+}
+
+.scenario-selection-brand {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.scenario-logo {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  border-radius: 22px;
+  padding: 14px;
+  background: rgba(2, 12, 20, 0.88);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-panel);
+}
+
+.scenario-kicker {
+  margin: 0 0 8px;
+  color: var(--color-accent-soft);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.scenario-selection-brand h1,
+.setup-screen-title {
+  margin: 0;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  line-height: 1.05;
+}
+
+.scenario-summary,
+.setup-screen-subtitle {
+  margin: 10px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 720px;
+}
+
+.scenario-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.scenario-card {
+  position: relative;
+  border: 1px solid var(--color-divider);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(0, 182, 215, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(5, 18, 31, 0.94), rgba(4, 14, 24, 0.96));
+  color: var(--color-text-primary);
+  text-align: left;
+  padding: 26px;
+  min-height: 230px;
+  display: grid;
+  align-content: end;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.scenario-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 182, 215, 0.65);
+  box-shadow: 0 24px 60px rgba(1, 10, 18, 0.34);
+}
+
+.scenario-card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent-soft);
+  border: 1px solid color-mix(in srgb, var(--color-accent-soft) 45%, transparent);
+  background: rgba(0, 182, 215, 0.1);
+}
+
+.scenario-card-icon .ui-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.scenario-card strong {
+  font-size: 1.4rem;
+}
+
+.scenario-card span:last-child {
+  color: var(--color-text-secondary);
+  font-size: 0.98rem;
+}
+
 .simulation-layout {
   display: grid;
   gap: 14px;
@@ -99,6 +203,13 @@ body::before {
 .setup-form {
   display: grid;
   gap: 14px;
+}
+
+.setup-screen-head {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .setup-toolbar {
@@ -255,7 +366,7 @@ body::before {
 .status-strip {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
 .status-strip div {
@@ -342,6 +453,18 @@ body::before {
 .sim-canvas-host {
   min-height: 420px;
   height: min(53vw, 620px);
+}
+
+.simulation-screen.is-offshore .sim-canvas-shell {
+  width: min(78vw, 720px);
+  margin: 0 auto;
+}
+
+.simulation-screen.is-offshore .sim-canvas-host {
+  width: 100%;
+  min-height: unset;
+  height: auto;
+  aspect-ratio: 1 / 1;
 }
 
 .sim-canvas-host canvas {
@@ -529,6 +652,24 @@ body::before {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.scenario-brief-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.scenario-brief-card {
+  overflow: hidden;
+}
+
+.scenario-brief-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
 }
 
 .graph-slot {
@@ -721,6 +862,10 @@ tbody tr.row-danger td {
   .status-strip {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .scenario-brief-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -747,6 +892,16 @@ tbody tr.row-danger td {
 
   .debug-panel-content {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .scenario-selection-brand,
+  .setup-screen-head {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .scenario-card-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -791,5 +946,14 @@ tbody tr.row-danger td {
   .info-list,
   .debug-panel-content {
     grid-template-columns: 1fr;
+  }
+
+  .scenario-selection-shell,
+  .scenario-brief-shell {
+    padding: 18px;
+  }
+
+  .scenario-brief-actions {
+    flex-direction: column-reverse;
   }
 }

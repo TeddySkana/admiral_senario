@@ -41,6 +41,136 @@ const ALERT_DEFINITIONS = {
     title: 'Simulation Resumed',
     icon: 'play',
   },
+  'threat-detected': {
+    severity: 'warning',
+    title: 'Threat Detected',
+    icon: 'suspicious',
+  },
+  'hostile-identified': {
+    severity: 'danger',
+    title: 'Hostile Identified',
+    icon: 'enemy',
+  },
+  'reserve-launch-available': {
+    severity: 'info',
+    title: 'Reserve Ready',
+    icon: 'friendly',
+  },
+  'reserve-launched': {
+    severity: 'success',
+    title: 'Reserve Launched',
+    icon: 'interceptor',
+  },
+  'sea-state-warning': {
+    severity: 'warning',
+    title: 'Sea State Warning',
+    icon: 'warning',
+  },
+  'protected-area-penetrated': {
+    severity: 'danger',
+    title: 'Protected Area Breached',
+    icon: 'enemy',
+  },
+  'collision-event': {
+    severity: 'danger',
+    title: 'Collision Event',
+    icon: 'warning',
+  },
+  'mission-success': {
+    severity: 'success',
+    title: 'Mission Success',
+    icon: 'success',
+  },
+  'mission-failure': {
+    severity: 'danger',
+    title: 'Mission Failure',
+    icon: 'enemy',
+  },
+  target_detected: {
+    severity: 'warning',
+    title: 'Target Detected',
+    icon: 'suspicious',
+  },
+  radio_challenge_started: {
+    severity: 'info',
+    title: 'Radio Challenge',
+    icon: 'contact',
+  },
+  target_cleared_non_threat: {
+    severity: 'success',
+    title: 'Target Cleared',
+    icon: 'success',
+  },
+  returned_to_patrol: {
+    severity: 'info',
+    title: 'Returned To Patrol',
+    icon: 'friendly',
+  },
+  intercept_started: {
+    severity: 'info',
+    title: 'Intercept Started',
+    icon: 'interceptor',
+  },
+  zigzag_started: {
+    severity: 'warning',
+    title: 'Zigzag Approach',
+    icon: 'suspicious',
+  },
+  warning_flare_fired: {
+    severity: 'warning',
+    title: 'Warning Flare',
+    icon: 'warning',
+  },
+  operator_approval_requested: {
+    severity: 'warning',
+    title: 'Approval Requested',
+    icon: 'warning',
+  },
+  operator_approval_granted: {
+    severity: 'success',
+    title: 'Approval Granted',
+    icon: 'success',
+  },
+  operator_approval_denied: {
+    severity: 'warning',
+    title: 'Approval Denied',
+    icon: 'warning',
+  },
+  mag_fire_blocked_unsafe_rig_line: {
+    severity: 'danger',
+    title: 'MAG Fire Blocked',
+    icon: 'enemy',
+  },
+  mag_fired: {
+    severity: 'danger',
+    title: 'MAG Fired',
+    icon: 'enemy',
+  },
+  target_neutralized: {
+    severity: 'success',
+    title: 'Target Neutralized',
+    icon: 'success',
+  },
+  mag_failed: {
+    severity: 'danger',
+    title: 'MAG Failed',
+    icon: 'warning',
+  },
+  ram_pursuit_started: {
+    severity: 'danger',
+    title: 'Ram Pursuit',
+    icon: 'interceptor',
+  },
+  collision_occurred: {
+    severity: 'danger',
+    title: 'Collision',
+    icon: 'warning',
+  },
+  mission_failed_protected_area_penetrated: {
+    severity: 'danger',
+    title: 'Protected Area Breached',
+    icon: 'enemy',
+  },
 };
 
 export class AlertBanner {

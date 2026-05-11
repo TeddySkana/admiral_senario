@@ -42,7 +42,7 @@ export class Minimap {
           <p>Operational overview and selected track.</p>
         </div>
       </div>`}
-      <canvas class="minimap-canvas" width="280" height="200"></canvas>
+      <canvas class="minimap-canvas" width="${this.geometry.scenarioType === 'offshore' ? 220 : 280}" height="${this.geometry.scenarioType === 'offshore' ? 220 : 200}"></canvas>
     `;
 
     this.canvas = this.root.querySelector('canvas');
@@ -73,6 +73,17 @@ export class Minimap {
 
     ctx.fillStyle = '#04111e';
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    if (this.geometry.scenarioType === 'offshore') {
+      this.drawOffshoreMap(ctx, state, selectedEntityId, {
+        accent,
+        accentSoft,
+        warning,
+        danger,
+        success,
+      });
+      return;
+    }
 
     const coastX = this.toCanvas({ x: this.geometry.coastlineXNm, y: 0 }).x;
     const westBorder = this.toCanvas({ x: this.geometry.westBorderXNm, y: 0 }).x;
@@ -152,6 +163,64 @@ export class Minimap {
           : contact.type === 'cargo'
             ? '#bdd1df'
             : accent;
+
+      drawMarker(ctx, point.x, point.y, contact.id === selectedEntityId ? 4.5 : 3.5, fill, '#03121d');
+    }
+  }
+
+  drawOffshoreMap(ctx, state, selectedEntityId, colors) {
+    const rigPoint = this.toCanvas(this.geometry.rig);
+
+    for (const ring of this.geometry.patrolRings ?? []) {
+      const radiusX = (ring.radiusNm / this.geometry.widthNm) * this.canvas.width;
+      const radiusY = (ring.radiusNm / this.geometry.heightNm) * this.canvas.height;
+      ctx.beginPath();
+      ctx.ellipse(rigPoint.x, rigPoint.y, radiusX, radiusY, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = ring.key === 'security' ? colors.success : '#ffffff';
+      ctx.lineWidth = ring.key === 'security' ? 1.8 : 1.7;
+      ctx.setLineDash(ring.key === 'security' ? [] : [6, 5]);
+      ctx.stroke();
+    }
+
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#d6f6ff';
+    ctx.beginPath();
+    ctx.moveTo(rigPoint.x, rigPoint.y - 7);
+    ctx.lineTo(rigPoint.x + 7, rigPoint.y);
+    ctx.lineTo(rigPoint.x + 3, rigPoint.y + 8);
+    ctx.lineTo(rigPoint.x - 3, rigPoint.y + 8);
+    ctx.lineTo(rigPoint.x - 7, rigPoint.y);
+    ctx.closePath();
+    ctx.fill();
+
+    for (const unit of state.friendlyUnits) {
+      const point = this.toCanvas(unit);
+      drawMarker(ctx, point.x, point.y, unit.id === selectedEntityId ? 5 : 4, colors.success, '#05222d');
+
+      if (unit.assignedTargetId) {
+        const target = state.contacts.find((contact) => contact.id === unit.assignedTargetId && contact.alive);
+
+        if (target) {
+          const targetPoint = this.toCanvas(target);
+          ctx.strokeStyle = 'rgba(67, 211, 141, 0.5)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(point.x, point.y);
+          ctx.lineTo(targetPoint.x, targetPoint.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    for (const contact of state.contacts) {
+      const point = this.toCanvas(contact);
+      const fill = !contact.alive
+        ? '#7d8f97'
+        : contact.classification === 'enemy'
+          ? colors.danger
+          : contact.classification === 'suspicious'
+            ? colors.warning
+            : colors.accent;
 
       drawMarker(ctx, point.x, point.y, contact.id === selectedEntityId ? 4.5 : 3.5, fill, '#03121d');
     }

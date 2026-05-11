@@ -13,6 +13,7 @@ export class ControlsCard {
     onDebugToggle,
     onSpeedChange,
     onUiClick,
+    backLabel = 'Back to Scenario Selection',
   }) {
     this.onPlay = onPlay;
     this.onPause = onPause;
@@ -25,6 +26,7 @@ export class ControlsCard {
     this.onDebugToggle = onDebugToggle;
     this.onSpeedChange = onSpeedChange;
     this.onUiClick = onUiClick;
+    this.backLabel = backLabel;
 
     this.root = null;
     this.speedButtons = [];
@@ -38,7 +40,7 @@ export class ControlsCard {
         <button class="primary-button" data-action="play">${renderIcon('play')}<span>Play</span></button>
         <button class="secondary-button" data-action="pause">${renderIcon('pause')}<span>Pause</span></button>
         <button class="secondary-button" data-action="reset">${renderIcon('reset')}<span>Reset</span></button>
-        <button class="ghost-button" data-action="back">${renderIcon('back')}<span>Back to Setup</span></button>
+        <button class="ghost-button" data-action="back">${renderIcon('back')}<span>${this.backLabel}</span></button>
       </div>
       <div class="controls-row controls-secondary">
         <div class="speed-group">

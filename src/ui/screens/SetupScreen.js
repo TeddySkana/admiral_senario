@@ -123,9 +123,18 @@ function normalizeConfig(config) {
 }
 
 export class SetupScreen {
-  constructor({ initialConfig = cloneScenarioConfig(defaultScenario), onRun }) {
+  constructor({
+    initialConfig = cloneScenarioConfig(defaultScenario),
+    onRun,
+    onBack = null,
+    title = 'Shore Protection',
+    subtitle = 'Configure the existing coastal simulation and launch the current scenario.',
+  }) {
     this.initialConfig = cloneScenarioConfig(initialConfig);
     this.onRun = onRun;
+    this.onBack = onBack;
+    this.title = title;
+    this.subtitle = subtitle;
     this.root = null;
     this.form = null;
     this.rangeNote = null;
@@ -139,6 +148,14 @@ export class SetupScreen {
     this.root.className = 'screen setup-screen';
     this.root.innerHTML = `
       <form class="setup-form">
+        <div class="setup-screen-head">
+          <div>
+            <p class="scenario-kicker">Scenario Setup</p>
+            <h1 class="setup-screen-title">${this.title}</h1>
+            <p class="setup-screen-subtitle">${this.subtitle}</p>
+          </div>
+          ${this.onBack ? `<button type="button" class="ghost-button" data-action="back">${renderIcon('back')} <span>Back to Scenario Selection</span></button>` : ''}
+        </div>
         <div class="setup-toolbar">
           <p class="setup-note">Engagement Radius: <strong id="setup-range-note">-</strong></p>
         </div>
@@ -152,6 +169,10 @@ export class SetupScreen {
     this.form = this.root.querySelector('form');
     this.rangeNote = this.root.querySelector('#setup-range-note');
     const panelsHost = this.root.querySelector('.setup-panels');
+
+    this.root.querySelector('[data-action="back"]')?.addEventListener('click', () => {
+      this.onBack?.();
+    });
 
     for (const group of FIELD_GROUPS) {
       const panel = new SetupPanel({

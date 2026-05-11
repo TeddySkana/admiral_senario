@@ -9,17 +9,12 @@ import { FpsOverlay } from './overlays/FpsOverlay.js';
 import { SelectionOverlay } from './overlays/SelectionOverlay.js';
 import { TargetIndicatorLayer } from './overlays/TargetIndicatorLayer.js';
 import { OceanLayer } from './water/OceanLayer.js';
-
-function withBase(path) {
-  const base = (import.meta.env.BASE_URL ?? '/').replace(/\/?$/, '/');
-  const normalizedPath = path.replace(/^\/+/, '');
-  return `${base}${normalizedPath}`;
-}
+import { withBasePath } from '../utils/assets.js';
 
 const SHIP_SPRITE_PATHS = {
-  friendly: withBase('sprites/ships/dvora-friendly.png'),
-  cargo: withBase('sprites/ships/cargo-neutral.png'),
-  fishing: withBase('sprites/ships/fishing-contact.png'),
+  friendly: withBasePath('sprites/ships/dvora-friendly.png'),
+  cargo: withBasePath('sprites/ships/cargo-neutral.png'),
+  fishing: withBasePath('sprites/ships/fishing-contact.png'),
 };
 
 const SHIP_SPRITE_SCALES = {
@@ -27,6 +22,7 @@ const SHIP_SPRITE_SCALES = {
   cargo: 0.27,
   fishing: 0.92,
 };
+const NAUTICAL_MILES_PER_STATUTE_MILE = 0.868976;
 
 function drawGlowingLine(graphics, start, end, glowColor, coreColor, width) {
   graphics.lineStyle(width + 4, glowColor, 0.08);
@@ -308,6 +304,11 @@ export class PixiRenderer {
     this.worldGraphics.clear();
     this.worldLabels.removeChildren().forEach((child) => child.destroy());
 
+    if (this.geometry.scenarioType === 'offshore') {
+      this.drawOffshoreWorld(viewport);
+      return;
+    }
+
     const coastX = this.worldToScreen({ x: this.geometry.coastlineXNm, y: 0 }).x;
     const northBorder = this.worldToScreen({ x: 0, y: this.geometry.northBorderYNm }).y;
     const southBorder = this.worldToScreen({ x: 0, y: this.geometry.southBorderYNm }).y;
@@ -379,6 +380,96 @@ export class PixiRenderer {
     }
   }
 
+  drawOffshoreWorld(viewport) {
+    const rigPoint = this.worldToScreen(this.geometry.rig);
+
+    for (let index = 0; index < 13; index += 1) {
+      const x = (viewport.width / 12) * index;
+      this.worldGraphics.lineStyle(1, 0xffffff, 0.03);
+      this.worldGraphics.moveTo(x, 0);
+      this.worldGraphics.lineTo(x, viewport.height);
+    }
+
+    for (let index = 0; index < 10; index += 1) {
+      const y = (viewport.height / 10) * index;
+      this.worldGraphics.lineStyle(1, 0xffffff, 0.022);
+      this.worldGraphics.moveTo(0, y);
+      this.worldGraphics.lineTo(viewport.width, y);
+    }
+
+    for (const ring of this.geometry.patrolRings ?? []) {
+      const radiusX = (ring.radiusNm / this.geometry.widthNm) * viewport.width;
+      const radiusY = (ring.radiusNm / this.geometry.heightNm) * viewport.height;
+      const color = ring.key === 'security' ? 0x7af2b5 : 0xffffff;
+
+      this.worldGraphics.lineStyle(ring.key === 'security' ? 2.2 : 2.3, color, ring.key === 'security' ? 0.86 : 0.84);
+      this.worldGraphics.beginFill(color, ring.key === 'security' ? 0.08 : 0.03);
+      this.worldGraphics.drawEllipse(rigPoint.x, rigPoint.y, radiusX, radiusY);
+      this.worldGraphics.endFill();
+    }
+
+    const radarRadiusX = (this.geometry.sensorRangesNm.radar / this.geometry.widthNm) * viewport.width;
+    const radarRadiusY = (this.geometry.sensorRangesNm.radar / this.geometry.heightNm) * viewport.height;
+    this.worldGraphics.lineStyle(1.1, 0x7dd7e8, 0.22);
+    this.worldGraphics.drawEllipse(rigPoint.x, rigPoint.y, radarRadiusX, radarRadiusY);
+
+    this.worldGraphics.lineStyle(2.2, 0xffffff, 0.95);
+    this.worldGraphics.beginFill(0xd9f6ff, 0.95);
+    this.worldGraphics.drawPolygon([
+      rigPoint.x, rigPoint.y - 16,
+      rigPoint.x + 12, rigPoint.y - 2,
+      rigPoint.x + 8, rigPoint.y + 16,
+      rigPoint.x - 8, rigPoint.y + 16,
+      rigPoint.x - 12, rigPoint.y - 2,
+    ]);
+    this.worldGraphics.endFill();
+    this.worldGraphics.lineStyle(1.5, 0x7dd7e8, 0.95);
+    this.worldGraphics.moveTo(rigPoint.x, rigPoint.y - 20);
+    this.worldGraphics.lineTo(rigPoint.x, rigPoint.y + 16);
+    this.worldGraphics.moveTo(rigPoint.x - 8, rigPoint.y + 2);
+    this.worldGraphics.lineTo(rigPoint.x + 8, rigPoint.y + 2);
+
+    const scaleMiles = 10;
+    const scaleNm = scaleMiles * NAUTICAL_MILES_PER_STATUTE_MILE;
+    const scaleWidth = (scaleNm / this.geometry.widthNm) * viewport.width;
+    const scaleLeft = viewport.width - scaleWidth - 26;
+    const scaleTop = viewport.height - 34;
+    const scaleHeight = 8;
+    const segmentWidth = scaleWidth / 4;
+
+    this.worldGraphics.lineStyle(1.2, 0xe7edf2, 0.95);
+    this.worldGraphics.beginFill(0xf4f6f8, 0.92);
+    this.worldGraphics.drawRect(scaleLeft, scaleTop, scaleWidth, scaleHeight);
+    this.worldGraphics.endFill();
+
+    for (let index = 0; index < 4; index += 1) {
+      this.worldGraphics.beginFill(index % 2 === 0 ? 0x1a1e23 : 0xf4f6f8, 0.95);
+      this.worldGraphics.drawRect(scaleLeft + (segmentWidth * index), scaleTop, segmentWidth, scaleHeight);
+      this.worldGraphics.endFill();
+    }
+
+    for (let index = 0; index <= 4; index += 1) {
+      const tickX = scaleLeft + (segmentWidth * index);
+      this.worldGraphics.lineStyle(1, 0xe7edf2, 0.95);
+      this.worldGraphics.moveTo(tickX, scaleTop);
+      this.worldGraphics.lineTo(tickX, scaleTop + scaleHeight);
+    }
+
+    const tickLabels = ['0', '2.5', '5', '7.5', '10'];
+    tickLabels.forEach((text, index) => {
+      const label = createMapLabel(text);
+      label.style.fontSize = 10;
+      label.x = scaleLeft + (segmentWidth * index) - (index === 0 ? 0 : 8);
+      label.y = scaleTop - 16;
+      this.worldLabels.addChild(label);
+    });
+
+    const scaleLabel = createMapLabel('Miles');
+    scaleLabel.x = scaleLeft + (scaleWidth * 0.5) - 16;
+    scaleLabel.y = scaleTop + 10;
+    this.worldLabels.addChild(scaleLabel);
+  }
+
   ensureEntityView(entity) {
     if (this.entityViews.has(entity.id)) {
       return this.entityViews.get(entity.id);
@@ -429,18 +520,20 @@ export class PixiRenderer {
       drawShadow(view.shadow, entity);
       drawMarker(view.marker, entity, this.elapsedSec);
 
-      const spriteKey = entity.type === 'friendly'
-        ? 'friendly'
-        : entity.type === 'cargo'
-          ? 'cargo'
-          : 'fishing';
+      const spriteKey = entity.spriteVariant ?? (
+        entity.type === 'friendly'
+          ? 'friendly'
+          : entity.type === 'cargo'
+            ? 'cargo'
+            : 'fishing'
+      );
       const spriteTexture = this.shipTextures.get(spriteKey);
 
       if (spriteTexture) {
         view.shipSprite.texture = spriteTexture;
         view.shipSprite.visible = true;
         view.shipSprite.scale.set(SHIP_SPRITE_SCALES[spriteKey] ?? 0.22);
-        view.shipSprite.tint = entity.type === 'fishing' ? getEntityColor(entity) : 0xffffff;
+        view.shipSprite.tint = spriteKey === 'fishing' ? getEntityColor(entity) : 0xffffff;
         view.shipFallback.clear();
         view.shipFallback.visible = false;
       } else {

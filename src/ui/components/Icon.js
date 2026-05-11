@@ -18,6 +18,8 @@ const ICONS = {
   success: '<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
   enemy: '<path d="M12 3l9 9-9 9-9-9z"/><path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="currentColor" stroke-width="2"/>',
   suspicious: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  shore: '<path d="M3 16c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 4 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6 11l3-4 4 3 5-5 1 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  rig: '<path d="M8 4h8l-1 4h4l-2 3-1 8H8L7 11 5 8h4z"/><path d="M10 4v15M14 4v15M7 19h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
 };
 
 export function renderIcon(name, label = '', className = '') {

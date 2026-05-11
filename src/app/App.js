@@ -1,16 +1,18 @@
-import { SimulationEngine } from '../sim/SimulationEngine.js';
-import { cloneScenarioConfig, defaultScenario } from '../sim/config/defaultScenario.js';
 import { EventBus } from '../state/EventBus.js';
 import { PixiRenderer } from '../render/PixiRenderer.js';
 import { SetupScreen } from '../ui/screens/SetupScreen.js';
 import { SimulationScreen } from '../ui/screens/SimulationScreen.js';
 import { AudioManager } from '../audio/AudioManager.js';
+import { getScenarioDefinition, SCENARIO_IDS, scenarioDefinitions } from './scenarioDefinitions.js';
+import { ScenarioSelectionScreen } from '../ui/screens/ScenarioSelectionScreen.js';
+import { ScenarioBriefScreen } from '../ui/screens/ScenarioBriefScreen.js';
 
 export class App {
   constructor(root) {
     this.root = root;
     this.currentScreen = null;
-    this.currentConfig = cloneScenarioConfig(defaultScenario);
+    this.currentScenarioId = SCENARIO_IDS.shore;
+    this.currentConfig = getScenarioDefinition(SCENARIO_IDS.shore).buildConfig();
     this.eventBus = null;
     this.engine = null;
     this.renderer = null;
@@ -23,22 +25,55 @@ export class App {
   }
 
   mount() {
-    this.showSetup(this.currentConfig);
+    this.showScenarioSelection();
   }
 
-  showSetup(config = this.currentConfig) {
+  getCurrentScenarioDefinition() {
+    return getScenarioDefinition(this.currentScenarioId);
+  }
+
+  showScenarioSelection() {
     document.title = 'Skana | SeaSphere - Admiral Senario Simulator';
     this.stopLoop();
     this.destroySimulationResources();
-    this.currentConfig = cloneScenarioConfig(config);
-
     this.currentScreen?.destroy();
-    this.currentScreen = new SetupScreen({
-      initialConfig: this.currentConfig,
-      onRun: (nextConfig) => {
-        void this.runSimulation(nextConfig);
-      },
+    this.currentScreen = new ScenarioSelectionScreen({
+      scenarios: Object.values(scenarioDefinitions),
+      onSelect: (scenarioId) => this.showScenarioSetup(scenarioId),
     });
+    this.currentScreen.mount(this.root);
+  }
+
+  showScenarioSetup(scenarioId) {
+    this.currentScenarioId = scenarioId;
+    const definition = this.getCurrentScenarioDefinition();
+    const nextConfig = definition.buildConfig();
+    this.currentConfig = nextConfig;
+    document.title = 'Skana | SeaSphere - Admiral Senario Simulator';
+    this.stopLoop();
+    this.destroySimulationResources();
+    this.currentScreen?.destroy();
+
+    if (definition.setupVariant === 'offshore-brief') {
+      this.currentScreen = new ScenarioBriefScreen({
+        config: nextConfig,
+        onBack: () => this.showScenarioSelection(),
+        onRun: (config) => {
+          void this.runSimulation(config);
+        },
+      });
+    } else {
+      this.currentScreen = new SetupScreen({
+        initialConfig: nextConfig,
+        title: definition.title,
+        subtitle: definition.subtitle,
+        onBack: () => this.showScenarioSelection(),
+        onRun: (config) => {
+          void this.runSimulation(config);
+        },
+      });
+    }
+
     this.currentScreen.mount(this.root);
   }
 
@@ -46,24 +81,26 @@ export class App {
     document.title = 'Skana | SeaSphere - Admiral Senario Simulator';
     this.stopLoop();
     this.destroySimulationResources();
-    this.currentConfig = cloneScenarioConfig(config);
+    this.currentConfig = JSON.parse(JSON.stringify(config));
     this.simSpeed = this.currentConfig.simulation.initialSpeedMultiplier;
     this.currentScreen?.destroy();
 
+    const definition = this.getCurrentScenarioDefinition();
     this.eventBus = new EventBus();
-    this.engine = new SimulationEngine(this.currentConfig, this.eventBus);
+    this.engine = definition.createEngine(this.currentConfig, this.eventBus);
     this.audioManager = new AudioManager(this.eventBus, this.currentConfig);
 
     this.currentScreen = new SimulationScreen({
       engine: this.engine,
       eventBus: this.eventBus,
       config: this.currentConfig,
+      scenarioDefinition: definition,
       initialSpeed: this.simSpeed,
       initialAudioState: this.audioManager.getState(),
       onPlay: () => this.engine.resume(),
       onPause: () => this.engine.pause(),
       onReset: () => this.resetSimulation(),
-      onBack: () => this.showSetup(this.currentConfig),
+      onBack: () => this.showScenarioSelection(),
       onSpeedChange: (multiplier) => {
         this.simSpeed = multiplier;
         this.currentScreen?.setSpeed(multiplier);

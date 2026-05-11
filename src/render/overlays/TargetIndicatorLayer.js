@@ -23,6 +23,16 @@ function drawDashedLine(graphics, start, end, dashLength, gapLength, color, widt
 }
 
 function getNearestBorderProjection(entity, geometry) {
+  if (geometry.scenarioType === 'offshore') {
+    return {
+      distance: Math.max(
+        0,
+        Math.hypot(entity.renderX - geometry.rig.x, entity.renderY - geometry.rig.y) - geometry.protectedAreaRadiusNm,
+      ),
+      point: geometry.rig,
+    };
+  }
+
   const candidates = [
     {
       distance: Math.abs(entity.renderY - geometry.northBorderYNm),

@@ -1,7 +1,14 @@
 export class GameCard {
-  constructor() {
+  constructor(statusItems = null) {
     this.root = null;
     this.statusNodes = {};
+    this.statusItems = statusItems ?? [
+      { key: 'time', label: 'Sim Time', value: '00:00' },
+      { key: 'threats', label: 'Threats', value: '0' },
+      { key: 'suspicious', label: 'Suspicious', value: '0' },
+      { key: 'enemy', label: 'Enemy', value: '0' },
+      { key: 'interceptors', label: 'Interceptors', value: '0' },
+    ];
   }
 
   mount(parent) {
@@ -10,11 +17,9 @@ export class GameCard {
     this.root.innerHTML = `
       <div class="game-card-head">
         <div class="status-strip">
-          <div><span>Sim Time</span><strong data-status="time">00:00</strong></div>
-          <div><span>Threats</span><strong data-status="threats">0</strong></div>
-          <div><span>Suspicious</span><strong data-status="suspicious">0</strong></div>
-          <div><span>Enemy</span><strong data-status="enemy">0</strong></div>
-          <div><span>Interceptors</span><strong data-status="interceptors">0</strong></div>
+          ${this.statusItems.map((item) => `
+            <div><span>${item.label}</span><strong data-status="${item.key}">${item.value}</strong></div>
+          `).join('')}
         </div>
       </div>
       <div class="game-alert-host"></div>
